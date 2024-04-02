@@ -444,31 +444,8 @@ class itivosImportProducts extends Modules
                     $encoded = $exploded[1]; 
                     $name = md5(time().rand());
 
-                    // Obtener la información de la imagen
-                    $image_info = getimagesizefromstring(base64_decode($encoded));
-                    $image_mime = $image_info['mime'];
-
-                    // Determinar la extensión del archivo
-                    switch ($image_mime) {
-                        case 'image/jpeg':
-                            $output_extension = 'jpg';
-                            $create_img_func = 'imagecreatefromjpeg';
-                            break;
-                        case 'image/png':
-                            $output_extension = 'png';
-                            $create_img_func = 'imagecreatefrompng';
-                            break;
-                        case 'image/gif':
-                            $output_extension = 'gif';
-                            $create_img_func = 'imagecreatefromgif';
-                            break;
-                        // Agrega más casos según sea necesario para otros formatos de imagen
-                        default:
-                            throw new Exception("Formato de imagen no compatible: $image_mime");
-                    }
-
                     // Crear la imagen a partir del string base64
-                    $image_resource = $create_img_func(base64_decode($encoded));
+                    $image_resource = imagecreatefromstring(base64_decode($encoded));
 
                     // Obtener dimensiones de la imagen
                     $image_width = imagesx($image_resource);
@@ -483,8 +460,8 @@ class itivosImportProducts extends Modules
                     imagecopy($canvas, $image_resource, 0, 0, 0, 0, $image_width, $image_height);
 
                     // Guardar la imagen con fondo blanco
-                    $output_path = __DOCUMENT_ROOT__."/img_upload/".$id_product."/".$name.".".$output_extension;
-                    $success = call_user_func("image$output_extension", $canvas, $output_path);
+                    $output_path = __DOCUMENT_ROOT__."/img_upload/".$id_product."/".$name.".png";
+                    $success = imagepng($canvas, $output_path);
 
                     // Liberar memoria
                     imagedestroy($image_resource);
@@ -506,7 +483,6 @@ class itivosImportProducts extends Modules
         } catch (Exception $e) {
             $log("Error al intentar obtener la imagen de la URL: {$image_link} para el producto {$id_product}. Error: " . $e->getMessage());
         }
-        
         return $return;
     }
     public function deleteProductImages($id_product)
