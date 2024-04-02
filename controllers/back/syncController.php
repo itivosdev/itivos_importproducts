@@ -172,9 +172,12 @@ class syncController extends ModulesBackControllers
             $file_upload_task_obj->total = $total;
             $file_upload_task_obj->send_notification = "yes";
             $file_upload_task_obj->type_file = $_POST['type_file'];
-            $file_upload_task_obj->type_import = $_POST['type_import'];
             $file_upload_task_obj->email_notification = $_POST['email_notification'];
-            $file_upload_task_obj->delete_current_images = $_POST['delete_current_images'];
+            if (isset($_POST['delete_current_images'])) {
+                $file_upload_task_obj->delete_current_images = $_POST['delete_current_images'];
+            }else {
+                $file_upload_task_obj->delete_current_images = "no";
+            }
             $file_upload_task_obj->save();
 
             $_SESSION['type_message'] = "success";
