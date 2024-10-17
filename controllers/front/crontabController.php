@@ -21,11 +21,11 @@ class CrontabController extends ModulesFrontControllers
         parent::__construct();
         $this->view->assign('page', "crontab import files");
         if (!isIsset('token')) {
-            die();
+            die("No se ha enviado el token");
         }else {
             $obj = new itivosImportProducts();
-            if (getValue('token') != $obj->key_module) {
-                die("el token no es valido");
+            if (getValue('token') != md5($obj->key_module)) {
+                die("El token no es valido");
             }
         }
         if (!Modules::isInstalled('itivos_importproducts')) {

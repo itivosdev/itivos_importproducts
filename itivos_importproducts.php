@@ -13,7 +13,7 @@ class itivosImportProducts extends Modules
         $this->displayName = $this->l('Import products');
         $this->description = $this->l('Importar desde excel catalogos, ficha tecnica y categorías');
         $this->category  ='administration';
-        $this->version ='1.0.0';
+        $this->version ='1.0.1';
         $this->author ='Bernardo Fuentes';
         $this->versions_compliancy = array('min'=>'1.43', 'max'=> __SYSTEM_VERSION__);
         $this->confirmUninstall = $this->l('Are you sure about removing these details?');
@@ -79,6 +79,12 @@ class itivosImportProducts extends Modules
             "500",
             "itivos_import_products"
         );
+        $return &= Configuration::updateValue(
+            "itivos_importproducts_cronta_link", 
+            self::genSecLink("crontab", "processFile"),
+            "itivos_import_products"
+        );
+        
         
         return $return;
     }
@@ -116,13 +122,17 @@ class itivosImportProducts extends Modules
         $helper = new HelperForm();
         $helper->tpl_vars = array(
             'fields_values' => array(
-                "itivos_importproducts_max_product" =>  Configuration::getValue(
-                    "itivos_importproducts_max_product")
+                "itivos_importproducts_max_product" => Configuration::getValue(
+                    "itivos_importproducts_max_product"
+                ),
+                "itivos_importproducts_cronta_link" => Configuration::getValue(
+                    "itivos_importproducts_cronta_link"
+                ),
             ),
             'languages' => language::getLangs($this->lang),
         );
         $helper->submit_action = "updateAction";
-        return $this->html = $helper->renderForm(self::generateForm());
+        return $this->html .= $helper->renderForm(self::generateForm());
     }
     public function generateForm()
     {
@@ -138,6 +148,12 @@ class itivosImportProducts extends Modules
                             'label' => $this->l('Cantidad maxima de productos a procesar por bucle.'),
                             'name' => 'itivos_importproducts_max_product',
                             'required' => true,
+                        ),
+                        array(
+                            'type' => 'text',
+                            'label' => $this->l('Crontab'),
+                            'desc' => "Crea un crontab con este enlace para procesar archivos cargados",
+                            'name' => 'itivos_importproducts_cronta_link',
                         ),
                     ),
                     'submit' => array(
@@ -320,6 +336,9 @@ class itivosImportProducts extends Modules
                     if (str_contains($val, "images")){
                         $key_images = $key_column;
                     }
+                    if (str_contains($val, "status")){
+                        $key_status = $key_column;
+                    }
                 }
             }else {
                 $product_obj = New Products();
@@ -339,7 +358,7 @@ class itivosImportProducts extends Modules
                     if ($has_id_header) {
                         $names_lang[$la_name['id_lang']]['id_product'] = $product_obj->id_product;
                     }
-                    $names_lang[$la_name['id_lang']]['name'] = base64_encode(strtolower($row[$key_lang]));
+                    $names_lang[$la_name['id_lang']]['name'] = strtolower($row[$key_lang]);
                 }
                 foreach ($l_short_descriptions as $key_lang => $l_short_description) {
                     $array_list = explode(".-", $row[$key_lang]);
@@ -353,12 +372,12 @@ class itivosImportProducts extends Modules
                         }
                         $short_description .="</ul>";
                     }
-                    $names_lang[$l_short_description['id_lang']]['short_description'] = base64_encode($short_description);
+                    $names_lang[$l_short_description['id_lang']]['short_description'] = $short_description;
                 }
                 foreach ($l_descriptions as $key_lang => $l_description) {
                     $description = '<p style="text-align:justify">';
                     $description .= "{$row[$key_lang]}</p>";
-                    $names_lang[$l_description['id_lang']]['description'] = base64_encode($description);
+                    $names_lang[$l_description['id_lang']]['description'] = $description;
                 }
                 if ($key_status != 0) {
                     $product_obj->status = $row[$key_status];
@@ -427,7 +446,7 @@ class itivosImportProducts extends Modules
     public function createProductImg($id_feed, $id_product, $image_link)
     {
         $return = false;
-        $logFilePath = __DIR__ . "/{$id_feed}";
+        $logFilePath = __DIR__ . "/{$id_feed}_log.txt";
         $log = function ($message) use ($logFilePath) {
             file_put_contents($logFilePath, date('Y-m-d H:i:s') . ' - ' . $message . PHP_EOL, FILE_APPEND);
         };

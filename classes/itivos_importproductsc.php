@@ -133,7 +133,7 @@ class itivos_importproductsc extends Model
 	    $lang_conditions_str = implode(" OR ", $lang_conditions);
 
 	    // Build the final query
-	    $query = "SELECT p.id, p.type, p.is_virtual, p.sku, p.category";
+	    $query = "SELECT p.id, p.type, p.is_virtual, p.sku, p.status, p.category";
 
 	    // Add columns for names, descriptions, etc.
 	    foreach ($iso_codes as $iso_code) {

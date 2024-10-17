@@ -378,6 +378,7 @@ class syncController extends ModulesBackControllers
 
                 $row_header[0][] = "is_virtual_product";
                 $row_header[0][] = "sku";
+                $row_header[0][] = "status";
                 $row_header[0][] = "category_id";
 
                 foreach (language::getLangs() as $key => $lang) {
