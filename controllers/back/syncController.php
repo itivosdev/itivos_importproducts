@@ -38,10 +38,12 @@ class syncController extends ModulesBackControllers
                     "uri_categories_import" => $uri_download."categories_import",
                     "uri_products_import" => $uri_download."products_import",
                     "uri_features_import" => $uri_download."features_import",
+                    "uri_brands_import" => $uri_download."brands_import",
 
                     "uri_categories_update" => $uri_download."categories_update",
                     "uri_products_update" => $uri_download."products_update",
                     "uri_features_update" => $uri_download."features_update",
+                    "uri_brands_update" => $uri_download."brands_update",
                 )
             );
             $this->html = $this->view->fetch($this->template_dir. "header_sync.tpl");
@@ -73,6 +75,10 @@ class syncController extends ModulesBackControllers
             array(
                 "type" => "products", 
                 "name" => "Productos", 
+            ),
+            array(
+                "type" => "brands", 
+                "name" => "Marcas", 
             ),
             array(
                 "type" => "features", 
@@ -369,7 +375,7 @@ class syncController extends ModulesBackControllers
                 $data = array_merge($row_header, $features);
                 $xlsx = Shuchkin\SimpleXLSXGen::fromArray($data);
                 $xlsx->downloadAs('update_features.xlsx');
-            break;
+                break;
             case 'products_update':
                 $iso_codes = array();
 
@@ -380,6 +386,7 @@ class syncController extends ModulesBackControllers
                 $row_header[0][] = "sku";
                 $row_header[0][] = "status";
                 $row_header[0][] = "category_id";
+                $row_header[0][] = "brand_id";
 
                 foreach (language::getLangs() as $key => $lang) {
                     array_push($iso_codes, $lang['iso_code']);
@@ -402,6 +409,35 @@ class syncController extends ModulesBackControllers
                 $xlsx = Shuchkin\SimpleXLSXGen::fromArray($data);
                 $xlsx->downloadAs('update_products.xlsx');
             break;
+            case 'brands_import':
+                $row = array();
+                $row[0][] = 'id_brand';
+                $row[0][] = 'label';
+                $row[0][] = 'status';
+                
+                $row[1][] = '1';
+                $row[1][] = 'example brand name';
+                $row[1][] = 'enabled';
+
+                $row[2][] = '2';
+                $row[2][] = 'other example';
+                $row[2][] = 'enabled';
+
+               
+                $xlsx = Shuchkin\SimpleXLSXGen::fromArray($row);
+                $xlsx->downloadAs('import_brands.xlsx');
+                break;
+            case 'brands_update':
+                $row_header = array();
+                $row_header[0][] = 'id_brand';
+                $row_header[0][] = 'label';
+                $row_header[0][] = 'status';
+               
+                $brands = itivosImportproductsC::getBrandList();
+                $data = array_merge($row_header, $brands);
+                $xlsx = Shuchkin\SimpleXLSXGen::fromArray($data);
+                $xlsx->downloadAs('update_brands.xlsx');
+                break;
             default:
                 break;
         }

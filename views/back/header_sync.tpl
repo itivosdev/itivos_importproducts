@@ -3,7 +3,8 @@
 
 	<p class="italic">Descarga archivos Excel de ejemplo para <b>importar:</b> 
 		<a href="{$uri_categories_import}">categorías</a>, 
-		<a href="{$uri_features_import}">caracteristicas</a> y 
+		<a href="{$uri_features_import}">caracteristicas</a>,  
+		<a href="{$uri_brands_import}">marcas</a> y 
 		<a href="{$uri_products_import}">productos</a>
 	</p>
 
@@ -18,13 +19,16 @@
 			<a href="{$uri_features_update}">Caracteristicas</a>
 		</li>
 		<li>
+			<a href="{$uri_brands_update}">Marcas</a>
+		</li>
+		<li>
 			<a href="{$uri_products_update}">Productos</a>
 		</li>
 	</ul>
 
 	<form method="get">
 		<button class="button button-secondary loading_full_screen_enable" name="uploadFileFrom" value="true">
-			<i class="material-icons">refresh</i>
+			<i class="material-icons">upload</i>
 			Cargar archivo de datos
 		</button>
 	</form>

@@ -13,7 +13,7 @@ class itivosImportProducts extends Modules
         $this->displayName = $this->l('Import products');
         $this->description = $this->l('Importar desde excel catalogos, ficha tecnica y categorías');
         $this->category  ='administration';
-        $this->version ='1.0.1';
+        $this->version ='1.0.2';
         $this->author ='Bernardo Fuentes';
         $this->versions_compliancy = array('min'=>'1.43', 'max'=> __SYSTEM_VERSION__);
         $this->confirmUninstall = $this->l('Are you sure about removing these details?');
@@ -279,6 +279,7 @@ class itivosImportProducts extends Modules
         $key_sku = 0;
         $key_is_virtual = 0;
         $key_id_category = 0;
+        $key_id_brand = 0;
         $key_images = 0;
         $key_price = 0;
         $key_price_drop = 0;
@@ -311,6 +312,9 @@ class itivosImportProducts extends Modules
                     }
                     if (str_contains($val, "category_id")){
                         $key_id_category = $key_column;
+                    }
+                    if (str_contains($val, "brand_id")){
+                        $key_id_brand = $key_column;
                     }
                     if (str_contains($val, "type_product")){
                         $key_type = $key_column;
@@ -415,6 +419,9 @@ class itivosImportProducts extends Modules
                 $product_obj->is_virtual = $row[$key_is_virtual];
                 $product_obj->sku = $row[$key_sku];
                 $product_obj->category = $row[$key_id_category];
+                if ($key_id_brand != 0) {
+                    $product_obj->id_brand = $row[$key_id_brand];
+                }
                 $product_obj->save();
                 if ($params['delete_current_images'] == "yes") {
                     if (!$deleted_images) {

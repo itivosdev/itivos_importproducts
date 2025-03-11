@@ -82,6 +82,14 @@ class itivos_importproductsc extends Model
 
 	    return $numeric_result;
 	}
+	public static function getBrandList()
+	{
+		$query = "SELECT b.id, b.label, b.status 
+					FROM ".__DB_PREFIX__."brands b 
+					WHERE b.status_db != 'deleted'
+				  ";
+		return connect::execute($query, "select");
+	}
 	public static function getFeaturesListIs()
 	{
 		$query = "SELECT f.id 
@@ -133,7 +141,7 @@ class itivos_importproductsc extends Model
 	    $lang_conditions_str = implode(" OR ", $lang_conditions);
 
 	    // Build the final query
-	    $query = "SELECT p.id, p.type, p.is_virtual, p.sku, p.status, p.category";
+	    $query = "SELECT p.id, p.type, p.is_virtual, p.sku, p.status, p.category, p.id_brand";
 
 	    // Add columns for names, descriptions, etc.
 	    foreach ($iso_codes as $iso_code) {
